@@ -168,7 +168,7 @@
         .podium-wrapper { display: flex; align-items: flex-end; justify-content: center; gap: 6px; height: 210px; margin: 10px 0; }
         .podium-column { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; text-align: center; border-radius: 8px 8px 0 0; padding: 10px 4px; font-weight: bold; }
         .podium-col-vice { background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%); border: 2px solid #9ca3af; height: 75%; color: #1f2937; }
-        .podium-col-champion { background: linear-gradient(135deg, #fffbeb 0%, #fcd34d 100%); border: 2px solid #d69e2e; height: 100%; color: #92400e; }
+        .podium-col-champion { background: linear-gradient(135deg, #fffbeb 0%, #fcd34d 100%); border: 2px solid #d69e2e; height: 100%; color: #92400e; height: 100%; }
         .podium-col-third { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 2px solid #ea580c; height: 55%; color: #9a3412; }
         .podium-label-badge { font-size: 1.3rem; margin-bottom: 5px; }
         .podium-text-country { font-size: 0.95rem; font-weight: 800; line-height: 1.2; }
@@ -212,9 +212,9 @@
 
     <div class="container">
         
-        <!-- Status de Conexão -->
+        <!-- Status de Conexão Absoluta -->
         <div class="sync-status-indicator">
-            <span class="status-dot" id="status-dot-icon"></span> <span id="sync-text-status">Sincronizando com a nuvem...</span>
+            <span class="status-dot" id="status-dot-icon"></span> <span id="sync-text-status">Conectando ao vivo...</span>
         </div>
 
         <!-- GRUPO A -->
@@ -411,7 +411,7 @@
         <div class="motivation-section">
             <h2 style="margin-top:0; font-size:1.1rem; color:#22543d;">⚽ Palavra Oficial de Abertura</h2>
             <div class="motivation-text">
-                "Grandes atletas não nascem prontos; eles se moldam na intensidade de cada jogada, na parceria de cada bola defendida e no suor deixado na areia! A 1ª Copa do Mundo FTV não é apenas sobre os troféus ou a premiação em dinheiro na mesa, mas sobre a honra de representar uma nação, o respeito a cada parceria do pote oposto e a resenha inesquecível que só o futevôlei proporciona."
+                "Grandes atletas não nascem prontos; eles se moldam na intensidade de cada jogada, na parceria de cada bola defendida e no suor deixado na areia! A 1ª Copa do Mundo FTV não é apenas sobre os troféus ou a premiação em dinheiro na mesa, mas sobre a honra de representar uma nation, o respeito a cada parceria do pote oposto e a resenha inesquecível que só o futevôlei proporciona."
             </div>
         </div>
 
@@ -469,50 +469,42 @@
             recalculateEverything();
 
             var target = BACKEND_SCRIPT_URL + '?action=write&id=' + matchId + '&s1=' + input1 + '&s2=' + input2;
-            document.getElementById('sync-text-status').innerText = "Enviando placar para a nuvem...";
+            document.getElementById('sync-text-status').innerText = "Salvando placar na nuvem...";
             document.getElementById('status-dot-icon').style.backgroundColor = "#ecc94b";
 
             fetch(target, { method: 'GET', mode: 'no-cors' })
                 .then(() => {
-                    document.getElementById('sync-text-status').innerText = "Placar salvo na nuvem!";
+                    document.getElementById('sync-text-status').innerText = "Sincronizado ao vivo!";
                     document.getElementById('status-dot-icon').style.backgroundColor = "#48bb78";
                 })
                 .catch(err => {
                     console.error(err);
-                    document.getElementById('sync-text-status').innerText = "Erro temporário de envio.";
+                    document.getElementById('sync-text-status').innerText = "Erro ao sincronizar.";
                     document.getElementById('status-dot-icon').style.backgroundColor = "#f56565";
                 });
         }
 
+        // 🔄 SISTEMA JSONP À PROVA DE BLOQUEIO DE NAVEGADORES MOBILE (CORS BYPASS)
         function pullDataFromCloud() {
-            document.getElementById('sync-text-status').innerText = "Sincronizando com o servidor...";
-            document.getElementById('status-dot-icon').style.backgroundColor = "#ecc94b";
+            var oldScript = document.getElementById('cloud-sync-engine');
+            if (oldScript) oldScript.remove();
 
-            fetch(BACKEND_SCRIPT_URL)
-                .then(r => r.text())
-                .then(text => {
-                    try {
-                        var data = JSON.parse(text);
-                        if (data && typeof data === 'object') {
-                            scoresMap = data;
-                            recalculateEverything();
-                            document.getElementById('sync-text-status').innerText = "Sincronizado ao vivo às " + new Date().toLocaleTimeString();
-                            document.getElementById('status-dot-icon').style.backgroundColor = "#48bb78";
-                        }
-                    } catch(e) {
-                        console.error("Resposta corrompida:", text);
-                        document.getElementById('sync-text-status').innerText = "⚠️ Dados recebidos incorretamente. Tentando reconectar...";
-                        document.getElementById('status-dot-icon').style.backgroundColor = "#f56565";
-                        recalculateEverything();
-                    }
-                })
-                .catch(err => {
-                    console.error("Falha na rede:", err);
-                    document.getElementById('sync-text-status').innerText = "⚠️ Tentando reconectar ao servidor...";
-                    document.getElementById('status-dot-icon').style.backgroundColor = "#f56565";
-                    recalculateEverything();
-                });
+            var script = document.createElement('script');
+            script.id = 'cloud-sync-engine';
+            // Adiciona timestamp dinâmico para quebrar o cache de celulares antigos
+            script.src = BACKEND_SCRIPT_URL + "?callback=injectCloudScores&cb=" + new Date().getTime();
+            document.body.appendChild(script);
         }
+
+        // Função global de captura do JSONP
+        window.injectCloudScores = function(data) {
+            if (data && typeof data === 'object') {
+                scoresMap = data;
+                recalculateEverything();
+                document.getElementById('sync-text-status').innerText = "Sincronizado ao vivo às " + new Date().toLocaleTimeString();
+                document.getElementById('status-dot-icon').style.backgroundColor = "#48bb78";
+            }
+        };
 
         function recalculateEverything() {
             for (var id in scoresMap) {
@@ -634,6 +626,7 @@
             }
         }
 
+        // Inicialização Local e Chamada da Nuvem
         recalculateEverything();
         pullDataFromCloud();
         setInterval(pullDataFromCloud, 15000);
