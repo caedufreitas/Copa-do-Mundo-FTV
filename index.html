@@ -168,7 +168,7 @@
         .podium-wrapper { display: flex; align-items: flex-end; justify-content: center; gap: 6px; height: 210px; margin: 10px 0; }
         .podium-column { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; text-align: center; border-radius: 8px 8px 0 0; padding: 10px 4px; font-weight: bold; }
         .podium-col-vice { background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%); border: 2px solid #9ca3af; height: 75%; color: #1f2937; }
-        .podium-col-champion { background: linear-gradient(135deg, #fffbeb 0%, #fcd34d 100%); border: 2px solid #d69e2e; height: 100%; color: #92400e; height: 100%; }
+        .podium-col-champion { background: linear-gradient(135deg, #fffbeb 0%, #fcd34d 100%); border: 2px solid #d69e2e; height: 100%; color: #92400e; }
         .podium-col-third { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 2px solid #ea580c; height: 55%; color: #9a3412; }
         .podium-label-badge { font-size: 1.3rem; margin-bottom: 5px; }
         .podium-text-country { font-size: 0.95rem; font-weight: 800; line-height: 1.2; }
@@ -212,12 +212,10 @@
 
     <div class="container">
         
-        <!-- Status de Conexão Absoluta -->
         <div class="sync-status-indicator">
             <span class="status-dot" id="status-dot-icon"></span> <span id="sync-text-status">Conectando ao vivo...</span>
         </div>
 
-        <!-- GRUPO A -->
         <div class="card card-grupo-a">
             <h2>Grupo A</h2>
             <div class="table-responsive">
@@ -233,7 +231,6 @@
             </div>
         </div>
 
-        <!-- GRUPO B -->
         <div class="card card-grupo-b">
             <h2>Grupo B</h2>
             <div class="table-responsive">
@@ -249,12 +246,10 @@
             </div>
         </div>
 
-        <!-- LISTA DE JOGOS -->
         <div class="card card-jogos">
             <h2>Jogos da Fase de Grupos</h2>
             <div class="games-timeline">
                 
-                <!-- JOGO 1 -->
                 <div class="game-box ga">
                     <div class="game-header"><span>Jogo 1</span><span class="group-tag">Grupo A</span></div>
                     <div class="game-body">
@@ -269,7 +264,6 @@
                     <button class="btn-save-cloud" onclick="pushScoreToCloud('m1')">💾 Salvar Resultado</button>
                 </div>
 
-                <!-- JOGO 2 -->
                 <div class="game-box gb">
                     <div class="game-header"><span>Jogo 2</span><span class="group-tag">Grupo B</span></div>
                     <div class="game-body">
@@ -284,7 +278,6 @@
                     <button class="btn-save-cloud" onclick="pushScoreToCloud('m2')">💾 Salvar Resultado</button>
                 </div>
 
-                <!-- JOGO 3 -->
                 <div class="game-box ga">
                     <div class="game-header"><span>Jogo 3</span><span class="group-tag">Grupo A</span></div>
                     <div class="game-body">
@@ -299,7 +292,6 @@
                     <button class="btn-save-cloud" onclick="pushScoreToCloud('m3')">💾 Salvar Resultado</button>
                 </div>
 
-                <!-- JOGO 4 -->
                 <div class="game-box gb">
                     <div class="game-header"><span>Jogo 4</span><span class="group-tag">Grupo B</span></div>
                     <div class="game-body">
@@ -314,7 +306,6 @@
                     <button class="btn-save-cloud" onclick="pushScoreToCloud('m4')">💾 Salvar Resultado</button>
                 </div>
 
-                <!-- JOGO 5 -->
                 <div class="game-box ga">
                     <div class="game-header"><span>Jogo 5</span><span class="group-tag">Grupo A</span></div>
                     <div class="game-body">
@@ -329,7 +320,6 @@
                     <button class="btn-save-cloud" onclick="pushScoreToCloud('m5')">💾 Salvar Resultado</button>
                 </div>
 
-                <!-- JOGO 6 -->
                 <div class="game-box gb">
                     <div class="game-header"><span>Jogo 6</span><span class="group-tag">Grupo B</span></div>
                     <div class="game-body">
@@ -347,7 +337,6 @@
             </div>
         </div>
 
-        <!-- MATA MATA -->
         <div class="card card-finais">
             <h2>Fase Final & Mata-Mata</h2>
             <div class="bracket-grid">
@@ -388,13 +377,11 @@
             </div>
         </div>
 
-        <!-- PÓDIO VISUAL -->
         <div id="podium-card">
             <h2>🏆 Pódio Oficial do Torneio 🏆</h2>
             <div class="podium-wrapper" id="podium-graphics-container"></div>
         </div>
 
-        <!-- RESUMO TÉCNICO -->
         <div id="summary-card">
             <h2>🏅 Resumo Técnico do Campeão 🏅</h2>
             <div class="congrats-text" id="summary-congrats-text"></div>
@@ -407,11 +394,10 @@
             <div class="insights-box" id="summary-insights-text"></div>
         </div>
 
-        <!-- PALAVRA DE ABERTURA -->
         <div class="motivation-section">
             <h2 style="margin-top:0; font-size:1.1rem; color:#22543d;">⚽ Palavra Oficial de Abertura</h2>
             <div class="motivation-text">
-                "Grandes atletas não nascem prontos; eles se moldam na intensidade de cada jogada, na parceria de cada bola defendida e no suor deixado na areia! A 1ª Copa do Mundo FTV não é apenas sobre os troféus ou a premiação em dinheiro na mesa, mas sobre a honra de representar uma nation, o respeito a cada parceria do pote oposto e a resenha inesquecível que só o futevôlei proporciona."
+                "Grandes atletas não nascem prontos; eles se moldam na intensidade de cada jogada, na parceria de cada bola defendida e no suor deixado na areia! A 1ª Copa do Mundo FTV não é apenas sobre os troféus ou a premiação em dinheiro na mesa, mas sobre a honra de representar uma nação, o respeito a cada parceria do pote oposto e a resenha inesquecível que só o futevôlei proporciona."
             </div>
         </div>
 
@@ -484,19 +470,18 @@
                 });
         }
 
-        // 🔄 SISTEMA JSONP À PROVA DE BLOQUEIO DE NAVEGADORES MOBILE (CORS BYPASS)
+        // 🔄 SISTEMA JSONP COMPATÍVEL COM QUALQUE CELULAR DO MERCADO
         function pullDataFromCloud() {
             var oldScript = document.getElementById('cloud-sync-engine');
             if (oldScript) oldScript.remove();
 
             var script = document.createElement('script');
             script.id = 'cloud-sync-engine';
-            // Adiciona timestamp dinâmico para quebrar o cache de celulares antigos
             script.src = BACKEND_SCRIPT_URL + "?callback=injectCloudScores&cb=" + new Date().getTime();
             document.body.appendChild(script);
         }
 
-        // Função global de captura do JSONP
+        // Captura o retorno empacotado do Google Sheets
         window.injectCloudScores = function(data) {
             if (data && typeof data === 'object') {
                 scoresMap = data;
@@ -626,7 +611,7 @@
             }
         }
 
-        // Inicialização Local e Chamada da Nuvem
+        // Desenha as tabelas locais imediatamente e inicia as checagens na nuvem
         recalculateEverything();
         pullDataFromCloud();
         setInterval(pullDataFromCloud, 15000);
