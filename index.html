@@ -212,12 +212,10 @@
 
     <div class="container">
         
-        <!-- Status de Conexão Confiável -->
         <div class="sync-status-indicator">
-            <span class="status-dot" id="status-dot-icon"></span> <span id="sync-text-status">Inicializando tabelas locais...</span>
+            <span class="status-dot" id="status-dot-icon"></span> <span id="sync-text-status">Inicializando tabelas...</span>
         </div>
 
-        <!-- GRUPO A -->
         <div class="card card-grupo-a">
             <h2>Grupo A</h2>
             <div class="table-responsive">
@@ -233,7 +231,6 @@
             </div>
         </div>
 
-        <!-- GRUPO B -->
         <div class="card card-grupo-b">
             <h2>Grupo B</h2>
             <div class="table-responsive">
@@ -249,12 +246,10 @@
             </div>
         </div>
 
-        <!-- LISTA DE JOGOS -->
         <div class="card card-jogos">
             <h2>Jogos da Fase de Grupos</h2>
             <div class="games-timeline">
                 
-                <!-- JOGO 1 -->
                 <div class="game-box ga">
                     <div class="game-header"><span>Jogo 1</span><span class="group-tag">Grupo A</span></div>
                     <div class="game-body">
@@ -269,7 +264,6 @@
                     <button class="btn-save-cloud" onclick="pushScoreToCloud('m1')">💾 Salvar Resultado</button>
                 </div>
 
-                <!-- JOGO 2 -->
                 <div class="game-box gb">
                     <div class="game-header"><span>Jogo 2</span><span class="group-tag">Grupo B</span></div>
                     <div class="game-body">
@@ -284,7 +278,6 @@
                     <button class="btn-save-cloud" onclick="pushScoreToCloud('m2')">💾 Salvar Resultado</button>
                 </div>
 
-                <!-- JOGO 3 -->
                 <div class="game-box ga">
                     <div class="game-header"><span>Jogo 3</span><span class="group-tag">Grupo A</span></div>
                     <div class="game-body">
@@ -299,7 +292,6 @@
                     <button class="btn-save-cloud" onclick="pushScoreToCloud('m3')">💾 Salvar Resultado</button>
                 </div>
 
-                <!-- JOGO 4 -->
                 <div class="game-box gb">
                     <div class="game-header"><span>Jogo 4</span><span class="group-tag">Grupo B</span></div>
                     <div class="game-body">
@@ -314,7 +306,6 @@
                     <button class="btn-save-cloud" onclick="pushScoreToCloud('m4')">💾 Salvar Resultado</button>
                 </div>
 
-                <!-- JOGO 5 -->
                 <div class="game-box ga">
                     <div class="game-header"><span>Jogo 5</span><span class="group-tag">Grupo A</span></div>
                     <div class="game-body">
@@ -329,7 +320,6 @@
                     <button class="btn-save-cloud" onclick="pushScoreToCloud('m5')">💾 Salvar Resultado</button>
                 </div>
 
-                <!-- JOGO 6 -->
                 <div class="game-box gb">
                     <div class="game-header"><span>Jogo 6</span><span class="group-tag">Grupo B</span></div>
                     <div class="game-body">
@@ -347,7 +337,6 @@
             </div>
         </div>
 
-        <!-- MATA MATA -->
         <div class="card card-finais">
             <h2>Fase Final & Mata-Mata</h2>
             <div class="bracket-grid">
@@ -388,13 +377,11 @@
             </div>
         </div>
 
-        <!-- PÓDIO VISUAL -->
         <div id="podium-card">
             <h2>🏆 Pódio Oficial do Torneio 🏆</h2>
             <div class="podium-wrapper" id="podium-graphics-container"></div>
         </div>
 
-        <!-- RESUMO TÉCNICO -->
         <div id="summary-card">
             <h2>🏅 Resumo Técnico do Campeão 🏅</h2>
             <div class="congrats-text" id="summary-congrats-text"></div>
@@ -407,7 +394,6 @@
             <div class="insights-box" id="summary-insights-text"></div>
         </div>
 
-        <!-- PALAVRA DE ABERTURA -->
         <div class="motivation-section">
             <h2 style="margin-top:0; font-size:1.1rem; color:#22543d;">⚽ Palavra Oficial de Abertura</h2>
             <div class="motivation-text">
@@ -421,7 +407,7 @@
         // =========================================================================
         // ⚙️ SUBSITITUA APENAS ESTE LINK COM A SUA URL NOVA DO GOOGLE APPS SCRIPT
         // =========================================================================
-        const BACKEND_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_9e_e9f6qL3P2ZHe89Y47jD82A2E_M-Example/exec";
+        const BACKEND_SCRIPT_URL = "COLE_AQUI_SUA_NOVA_URL_DO_APPS_SCRIPT";
         // =========================================================================
 
         var groupA_Teams = [
@@ -462,7 +448,7 @@
 
         function pushScoreToCloud(matchId) {
             if (BACKEND_SCRIPT_URL.includes("COLE_AQUI")) {
-                alert("https://script.google.com/macros/s/AKfycbz5XUtJYz-mBo9WGFTYbVXQ-w8FWem0Kg5j-7ZC2jHz8vmayp-6ifwvLBI-hjNCDxms/exec");
+                alert("⚠️ Erro: Insira a URL do Apps Script dentro do código do arquivo!");
                 return;
             }
 
@@ -488,7 +474,7 @@
                 })
                 .catch(err => {
                     console.error(err);
-                    document.getElementById('sync-text-status').innerText = "Erro ao enviar dados para a nuvem.";
+                    document.getElementById('sync-text-status').innerText = "Erro temporário de envio.";
                     document.getElementById('status-dot-icon').style.backgroundColor = "#f56565";
                 });
         }
@@ -503,23 +489,27 @@
             document.getElementById('status-dot-icon').style.backgroundColor = "#ecc94b";
 
             fetch(BACKEND_SCRIPT_URL)
-                .then(r => {
-                    if (!r.ok) throw new Error("Erro HTTP");
-                    return r.json();
-                })
-                .then(data => {
-                    if (data && typeof data === 'object') {
-                        scoresMap = data;
+                .then(r => r.text()) // Lê como texto puro primeiro para blindar contra falhas de JSON
+                .then(text => {
+                    try {
+                        var data = JSON.parse(text);
+                        if (data && typeof data === 'object') {
+                            scoresMap = data;
+                            recalculateEverything();
+                            document.getElementById('sync-text-status').innerText = "Sincronizado ao vivo às " + new Date().toLocaleTimeString();
+                            document.getElementById('status-dot-icon').style.backgroundColor = "#48bb78";
+                        }
+                    } catch(e) {
+                        console.error("Resposta corrompida do Google:", text);
+                        document.getElementById('sync-text-status').innerText = "⚠️ Erro de leitura do Sheets. Tentando reconectar...";
+                        document.getElementById('status-dot-icon').style.backgroundColor = "#f56565";
                         recalculateEverything();
-                        document.getElementById('sync-text-status').innerText = "Sincronizado ao vivo às " + new Date().toLocaleTimeString();
-                        document.getElementById('status-dot-icon').style.backgroundColor = "#48bb78";
                     }
                 })
                 .catch(err => {
-                    console.error("Erro de sincronização:", err);
-                    document.getElementById('sync-text-status').innerText = "⚠️ Erro de leitura do Sheets. Tentando reconectar...";
+                    console.error("Falha na rede:", err);
+                    document.getElementById('sync-text-status').innerText = "⚠️ Sem resposta do servidor. Tentando reconectar...";
                     document.getElementById('status-dot-icon').style.backgroundColor = "#f56565";
-                    // Fallback para manter tabelas visíveis mesmo sem rede
                     recalculateEverything();
                 });
         }
@@ -644,10 +634,8 @@
             }
         }
 
-        // 🚀 INICIALIZAÇÃO BLINDADA: Desenha os grupos localmente de imediato
+        // Desenha as tabelas e roda a sincronização de 15s
         recalculateEverything();
-
-        // Faz a conexão com a nuvem em background
         pullDataFromCloud();
         setInterval(pullDataFromCloud, 15000);
     </script>
