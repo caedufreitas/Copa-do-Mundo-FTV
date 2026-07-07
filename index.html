@@ -3,83 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1º COPA DO MUNDO FTV - Painel Real-Time</title>
+    <title>Painel FTV</title>
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f7fafc; color: #1a202c; margin: 0; padding: 0; }
-        header { background: linear-gradient(135deg, #1a365d 0%, #2a4365 100%); color: white; padding: 20px 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .container { width: 100%; padding: 12px; margin: 0 auto; max-width: 600px; }
-        .sync-status-indicator { text-align: center; font-size: 0.75rem; color: #718096; font-weight: 600; margin-bottom: 15px; background: white; padding: 8px; border-radius: 20px; border: 1px solid #e2e8f0; }
-        .status-dot { display: inline-block; width: 8px; height: 8px; background-color: #ecc94b; border-radius: 50%; margin-right: 5px; }
-        .card { background-color: white; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); padding: 15px; margin-bottom: 20px; border-top: 5px solid #3182ce; }
-        table { width: 100%; border-collapse: collapse; min-width: 400px; font-size: 0.8rem; }
-        th, td { padding: 10px; border-bottom: 1px solid #edf2f7; text-align: center; }
-        .score-input { width: 45px; height: 38px; text-align: center; font-weight: bold; border: 2px solid #cbd5e0; border-radius: 6px; }
-        .btn-save-cloud { background: #48bb78; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 5px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7fafc; padding: 20px; color: #2d3748; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .status { font-size: 0.85rem; color: #718096; margin-bottom: 15px; text-align: center; font-weight: 500; }
+        .input-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        input { width: 60px; padding: 8px; text-align: center; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; }
     </style>
 </head>
 <body>
 
-    <header><h1>1º COPA DO MUNDO FTV</h1></header>
-
-    <div class="container">
-        <div class="sync-status-indicator">
-            <span class="status-dot" id="status-dot-icon"></span> <span id="sync-text-status">Conectando...</span>
-        </div>
-
-        <div class="card">
-            <h2>Tabela de Grupos</h2>
-            <table id="tabela-jogos">
-                <thead><tr><th>Time</th><th>P</th><th>V</th><th>D</th><th>Saldo</th></tr></thead>
-                <tbody id="tbody-a"></tbody>
-            </table>
-        </div>
-
-        <div class="card" id="jogos-container">
-            <h2>Jogos</h2>
-            </div>
+    <div class="status" id="sync-status">Conectando à rede FTV...</div>
+    
+    <div id="app-container" class="card">
+        <p>Aguardando dados da planilha...</p>
     </div>
 
     <script>
-        const BACKEND_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZcvNUJSQTPQa1QLpVXnZ3QxKtMpDuWXuiREPy8UCtV4Beck0uGfSVgxVjXGliQbRJ/exec";
+        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzZcvNUJSQTPQa1QLpVXnZ3QxKtMpDuWXuiREPy8UCtV4Beck0uGfSVgxVjXGliQbRJ/exec";
         
-        let scoresMap = { 'm1': [null, null], 'm2': [null, null], 'm3': [null, null], 'm4': [null, null], 'm5': [null, null], 'm6': [null, null] };
-
-        function pushScoreToCloud(matchId) {
-            let s1 = document.getElementById(matchId + '-1').value;
-            let s2 = document.getElementById(matchId + '-2').value;
-            fetch(`${BACKEND_SCRIPT_URL}?action=write&id=${matchId}&s1=${s1}&s2=${s2}`, { mode: 'no-cors' })
-            .then(() => alert("Salvo!"));
-        }
-
         window.injectCloudScores = function(data) {
-            if (data && typeof data === 'object') {
-                // Mescla os dados recebidos com o mapa local sem destruir a estrutura
-                for (let key in data) { scoresMap[key] = data[key]; }
-                
-                // Atualiza inputs visíveis na tela
-                for (let id in scoresMap) {
-                    if(document.getElementById(id + '-1')) {
-                        document.getElementById(id + '-1').value = scoresMap[id][0] ?? '';
-                        document.getElementById(id + '-2').value = scoresMap[id][1] ?? '';
-                    }
-                }
-                document.getElementById('sync-text-status').innerText = "Atualizado: " + new Date().toLocaleTimeString();
-                document.getElementById('status-dot-icon').style.backgroundColor = "#48bb78";
+            const statusDiv = document.getElementById('sync-status');
+            statusDiv.innerText = "Atualizado às " + new Date().toLocaleTimeString();
+            statusDiv.style.color = "#48bb78";
+            
+            console.log("Dados recebidos da nuvem:", data);
+            
+            // Exemplo de como renderizar: limpa e reconstrói
+            const container = document.getElementById('app-container');
+            container.innerHTML = "<h3>Placares</h3>";
+            for (let key in data) {
+                let div = document.createElement('div');
+                div.className = 'input-group';
+                div.innerHTML = `<span>${key}</span> <div><input value="${data[key][0]||''}"> x <input value="${data[key][1]||''}"></div>`;
+                container.appendChild(div);
             }
         };
 
-        function pullDataFromCloud() {
-            let oldScript = document.getElementById('cloud-sync');
-            if (oldScript) oldScript.remove();
-            let script = document.createElement('script');
-            script.id = 'cloud-sync';
-            script.src = BACKEND_SCRIPT_URL + "?callback=injectCloudScores&cb=" + new Date().getTime();
-            document.body.appendChild(script);
+        function pullData() {
+            let old = document.getElementById('jsonp-script');
+            if (old) old.remove();
+            
+            let s = document.createElement('script');
+            s.id = 'jsonp-script';
+            s.src = BACKEND_URL + "?callback=injectCloudScores&cb=" + new Date().getTime();
+            document.body.appendChild(s);
         }
 
-        setInterval(pullDataFromCloud, 15000);
-        pullDataFromCloud();
+        // Tenta atualizar a cada 10 segundos
+        setInterval(pullData, 10000);
+        pullData();
     </script>
 </body>
 </html>
