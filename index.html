@@ -40,7 +40,7 @@
             display: inline-block;
             width: 8px;
             height: 8px;
-            background-color: #48bb78;
+            background-color: #ecc94b;
             border-radius: 50%;
             margin-right: 5px;
         }
@@ -212,9 +212,9 @@
 
     <div class="container">
         
-        <!-- Status de Conexão Limpo -->
+        <!-- Status de Conexão Confiável -->
         <div class="sync-status-indicator">
-            <span class="status-dot"></span> <span id="sync-text-status">Conectando ao servidor do torneio...</span>
+            <span class="status-dot" id="status-dot-icon"></span> <span id="sync-text-status">Inicializando tabelas locais...</span>
         </div>
 
         <!-- GRUPO A -->
@@ -419,9 +419,9 @@
 
     <script>
         // =========================================================================
-        // ⚙️ ÚNICO LINK REQUERIDO: COLOQUE AQUI A URL GERADA NO SEU GOOGLE APPS SCRIPT
+        // ⚙️ SUBSITITUA APENAS ESTE LINK COM A SUA URL NOVA DO GOOGLE APPS SCRIPT
         // =========================================================================
-        const BACKEND_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5XUtJYz-mBo9WGFTYbVXQ-w8FWem0Kg5j-7ZC2jHz8vmayp-6ifwvLBI-hjNCDxms/exec";
+        const BACKEND_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_9e_e9f6qL3P2ZHe89Y47jD82A2E_M-Example/exec";
         // =========================================================================
 
         var groupA_Teams = [
@@ -460,10 +460,9 @@
             return "";
         }
 
-        // SALVAMENTO DA NUVEM INSTANTÂNEO
         function pushScoreToCloud(matchId) {
             if (BACKEND_SCRIPT_URL.includes("COLE_AQUI")) {
-                alert("⚠️ Erro: Insira a URL do Apps Script dentro do código do arquivo!");
+                alert("https://script.google.com/macros/s/AKfycbz5XUtJYz-mBo9WGFTYbVXQ-w8FWem0Kg5j-7ZC2jHz8vmayp-6ifwvLBI-hjNCDxms/exec");
                 return;
             }
 
@@ -479,46 +478,62 @@
             recalculateEverything();
 
             var target = BACKEND_SCRIPT_URL + '?action=write&id=' + matchId + '&s1=' + input1 + '&s2=' + input2;
-            document.getElementById('sync-text-status').innerText = "Salvando placar na nuvem...";
+            document.getElementById('sync-text-status').innerText = "Enviando placar para o banco de dados...";
+            document.getElementById('status-dot-icon').style.backgroundColor = "#ecc94b";
 
             fetch(target, { method: 'GET', mode: 'no-cors' })
                 .then(() => {
-                    document.getElementById('sync-text-status').innerText = "Placar gravado! Sincronização ao vivo ativa.";
-                    alert("💾 Sucesso! O placar foi gravado no Sheets e atualizado para todos os dispositivos.");
+                    document.getElementById('sync-text-status').innerText = "Placar guardado em segundo plano!";
+                    document.getElementById('status-dot-icon').style.backgroundColor = "#48bb78";
                 })
                 .catch(err => {
                     console.error(err);
                     document.getElementById('sync-text-status').innerText = "Erro ao enviar dados para a nuvem.";
+                    document.getElementById('status-dot-icon').style.backgroundColor = "#f56565";
                 });
         }
 
-        // LEITURA DO GOOGLE EM TEMPO REAL SEM USAR O LINK CSV CACHADO
         function pullDataFromCloud() {
             if (BACKEND_SCRIPT_URL.includes("COLE_AQUI")) {
-                renderHtmlTables();
+                document.getElementById('sync-text-status').innerText = "Aviso: Link da nuvem pendente de configuração.";
                 return;
             }
 
+            document.getElementById('sync-text-status').innerText = "Conectando ao servidor do torneio...";
+            document.getElementById('status-dot-icon').style.backgroundColor = "#ecc94b";
+
             fetch(BACKEND_SCRIPT_URL)
-                .then(r => r.json())
+                .then(r => {
+                    if (!r.ok) throw new Error("Erro HTTP");
+                    return r.json();
+                })
                 .then(data => {
-                    scoresMap = data;
-                    recalculateEverything();
-                    document.getElementById('sync-text-status').innerText = "Sincronizado ao vivo às " + new Date().toLocaleTimeString();
+                    if (data && typeof data === 'object') {
+                        scoresMap = data;
+                        recalculateEverything();
+                        document.getElementById('sync-text-status').innerText = "Sincronizado ao vivo às " + new Date().toLocaleTimeString();
+                        document.getElementById('status-dot-icon').style.backgroundColor = "#48bb78";
+                    }
                 })
                 .catch(err => {
-                    console.log("Tentando sincronizar dados...");
+                    console.error("Erro de sincronização:", err);
+                    document.getElementById('sync-text-status').innerText = "⚠️ Erro de leitura do Sheets. Tentando reconectar...";
+                    document.getElementById('status-dot-icon').style.backgroundColor = "#f56565";
+                    // Fallback para manter tabelas visíveis mesmo sem rede
+                    recalculateEverything();
                 });
         }
 
         function recalculateEverything() {
             for (var id in scoresMap) {
                 var s = scoresMap[id];
-                if (document.activeElement !== document.getElementById(id + '-1')) {
-                    document.getElementById(id + '-1').value = s[0] !== null ? s[0] : '';
-                }
-                if (document.activeElement !== document.getElementById(id + '-2')) {
-                    document.getElementById(id + '-2').value = s[1] !== null ? s[1] : '';
+                if (s) {
+                    if (document.activeElement !== document.getElementById(id + '-1')) {
+                        document.getElementById(id + '-1').value = s[0] !== null ? s[0] : '';
+                    }
+                    if (document.activeElement !== document.getElementById(id + '-2')) {
+                        document.getElementById(id + '-2').value = s[1] !== null ? s[1] : '';
+                    }
                 }
             }
 
@@ -629,7 +644,10 @@
             }
         }
 
-        // Primeira carga e loop de 15 segundos
+        // 🚀 INICIALIZAÇÃO BLINDADA: Desenha os grupos localmente de imediato
+        recalculateEverything();
+
+        // Faz a conexão com a nuvem em background
         pullDataFromCloud();
         setInterval(pullDataFromCloud, 15000);
     </script>
