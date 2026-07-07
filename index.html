@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1º COPA DO MUNDO FTV - Painel Cloud Invisível</title>
+    <title>1º COPA DO MUNDO FTV - Painel Real-Time Absoluto</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -24,7 +24,6 @@
         header p { margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9; }
         .container { width: 100%; padding: 12px; margin: 0 auto; }
         
-        /* Status de Sincronização Discreto no topo */
         .sync-status-indicator {
             text-align: center;
             font-size: 0.75rem;
@@ -32,7 +31,7 @@
             font-weight: 600;
             margin-bottom: 15px;
             background: white;
-            padding: 6px;
+            padding: 8px;
             border-radius: 20px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.02);
             border: 1px solid #e2e8f0;
@@ -138,7 +137,7 @@
             background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
             color: white;
             border: none;
-            padding: 9px 12px;
+            padding: 10px 12px;
             font-size: 0.8rem;
             font-weight: bold;
             border-radius: 6px;
@@ -146,9 +145,7 @@
             width: 100%;
             text-align: center;
             text-transform: uppercase;
-            box-shadow: 0 2px 4px rgba(72,187,120,0.1);
         }
-        .btn-save-cloud:active { opacity: 0.9; }
 
         .bracket-grid { display: flex; flex-direction: column; gap: 15px; }
         .phase-box { background: #f7fafc; padding: 12px; border-radius: 10px; border: 2px dashed #cbd5e0; margin-bottom: 5px; }
@@ -157,7 +154,6 @@
         .row-final { display: flex; justify-content: space-between; align-items: center; margin: 5px 0; font-size: 0.85rem; font-weight: 600; }
         .score-final-input { width: 42px; height: 34px; font-size: 1.1rem; font-weight: bold; text-align: center; border: 2px solid #cbd5e0; border-radius: 6px; }
         
-        /* PÓDIO VISUAL */
         #podium-card {
             background: white;
             border-radius: 12px;
@@ -179,7 +175,6 @@
         .podium-text-players { font-size: 0.7rem; font-weight: 600; opacity: 0.85; margin-top: 3px; }
         .podium-base-number { font-size: 1.4rem; font-weight: 900; margin-top: auto; padding-top: 10px; opacity: 0.25; }
 
-        /* RESUMO TÉCNICO DOS DESTAQUES DO CAMPEÃO */
         #summary-card {
             background: #fffaf0;
             border-radius: 14px;
@@ -212,14 +207,14 @@
 
     <header>
         <h1>1º COPA DO MUNDO FTV</h1>
-        <p>Painel de Controle Integrado em Segundo Plano</p>
+        <p>Transmissão e Controle Online em Tempo Real</p>
     </header>
 
     <div class="container">
         
-        <!-- Status Discreto de Conexão Automática -->
+        <!-- Status de Conexão Limpo -->
         <div class="sync-status-indicator">
-            <span class="status-dot"></span> <span id="sync-text-status">Conectado ao Banco de Dados da Nuvem (Atualização Automática Ativa)</span>
+            <span class="status-dot"></span> <span id="sync-text-status">Conectando ao servidor do torneio...</span>
         </div>
 
         <!-- GRUPO A -->
@@ -254,7 +249,7 @@
             </div>
         </div>
 
-        <!-- LISTA DE JOGOS EDITÁVEIS -->
+        <!-- LISTA DE JOGOS -->
         <div class="card card-jogos">
             <h2>Jogos da Fase de Grupos</h2>
             <div class="games-timeline">
@@ -424,10 +419,9 @@
 
     <script>
         // =========================================================================
-        // ⚙️ CONFIGURAÇÃO DE BACKEND TRANSPARENTE (COLE SEUS LINKS APENAS UMA VEZ AQUI)
+        // ⚙️ ÚNICO LINK REQUERIDO: COLOQUE AQUI A URL GERADA NO SEU GOOGLE APPS SCRIPT
         // =========================================================================
-        const BACKEND_CSV_URL = "https://docs.google.com/spreadsheets/d/10JxqfbMGgok8VhbcWulvt7QtinB9zXrPP5yf56rCtQY/edit?usp=sharing";
-        const BACKEND_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5XUtJYz-mBo9WGFTYbVXQ-w8FWem0Kg5j-7ZC2jHz8vmayp-6ifwvLBI-hjNCDxms/exec";
+        const BACKEND_SCRIPT_URL = "https://script.google.com/macros/library/d/1V-t0Rs4FXTPAeGHuyTJ9k9BEJURCISLILqamjhx20vsgzNutoWxnWin1/2";
         // =========================================================================
 
         var groupA_Teams = [
@@ -466,10 +460,10 @@
             return "";
         }
 
-        // DISPARO SEGURO PARA GRAVAÇÃO EM SEGUNDO PLANO
+        // SALVAMENTO DA NUVEM INSTANTÂNEO
         function pushScoreToCloud(matchId) {
             if (BACKEND_SCRIPT_URL.includes("COLE_AQUI")) {
-                alert("⚠️ Erro de Desenvolvedor: Altere a constante 'BACKEND_SCRIPT_URL' dentro do código do arquivo!");
+                alert("⚠️ Erro: Insira a URL do Apps Script dentro do código do arquivo!");
                 return;
             }
 
@@ -477,60 +471,49 @@
             var input2 = document.getElementById(matchId + '-2').value;
 
             if (input1 === '' || input2 === '') {
-                alert("⚠️ Preencha os dois placares antes de disparar o salvamento!");
+                alert("⚠️ Digite os dois placares antes de salvar!");
                 return;
             }
 
-            // Otimismo Mobile: Aplica o cálculo no seu ecrã na hora antes de aguardar a nuvem terminar
             scoresMap[matchId] = [parseInt(input1), parseInt(input2)];
             recalculateEverything();
 
-            var target = BACKEND_SCRIPT_URL + '?id=' + matchId + '&s1=' + input1 + '&s2=' + input2;
-            document.getElementById('sync-text-status').innerText = "Enviando dados para o Sheets...";
+            var target = BACKEND_SCRIPT_URL + '?action=write&id=' + matchId + '&s1=' + input1 + '&s2=' + input2;
+            document.getElementById('sync-text-status').innerText = "Salvando placar na nuvem...";
 
             fetch(target, { method: 'GET', mode: 'no-cors' })
                 .then(() => {
-                    document.getElementById('sync-text-status').innerText = "Conectado ao Banco de Dados da Nuvem (Atualização Automática Ativa)";
-                    alert("💾 Sucesso! Placar salvo e sincronizado na nuvem.");
+                    document.getElementById('sync-text-status').innerText = "Placar gravado! Sincronização ao vivo ativa.";
+                    alert("💾 Sucesso! O placar foi gravado no Sheets e atualizado para todos os dispositivos.");
                 })
                 .catch(err => {
                     console.error(err);
-                    document.getElementById('sync-text-status').innerText = "Erro ao enviar. Guardado localmente.";
+                    document.getElementById('sync-text-status').innerText = "Erro ao enviar dados para a nuvem.";
                 });
         }
 
-        // PUXADA DOS DADOS DA NUVEM (RODA NO INÍCIO E A CADA 30 SEGUNDOS SOZINHO)
+        // LEITURA DO GOOGLE EM TEMPO REAL SEM USAR O LINK CSV CACHADO
         function pullDataFromCloud() {
-            if (BACKEND_CSV_URL.includes("COLE_AQUI")) {
-                renderHtmlTables(); // Abre zerado caso ele ainda não tenha configurado
+            if (BACKEND_SCRIPT_URL.includes("COLE_AQUI")) {
+                renderHtmlTables();
                 return;
             }
 
-            fetch(BACKEND_CSV_URL + "?cachebuster=" + new Date().getTime())
-                .then(r => r.text())
-                .then(text => {
-                    var lines = text.split(/\r?\n/);
-                    for (var i = 1; i < lines.length; i++) {
-                        if (!lines[i]) continue;
-                        var cols = lines[i].split(',');
-                        var matchId = cols[0].trim().toLowerCase();
-                        var s1 = cols[1] !== undefined && cols[1].trim() !== '' ? parseInt(cols[1]) : null;
-                        var s2 = cols[2] !== undefined && cols[2].trim() !== '' ? parseInt(cols[2]) : null;
-                        if (scoresMap[matchId] !== undefined) {
-                            scoresMap[matchId] = [s1, s2];
-                        }
-                    }
+            fetch(BACKEND_SCRIPT_URL)
+                .then(r => r.json())
+                .then(data => {
+                    scoresMap = data;
                     recalculateEverything();
-                    document.getElementById('sync-text-status').innerText = "Sincronizado automaticamente às " + new Date().toLocaleTimeString();
+                    document.getElementById('sync-text-status').innerText = "Sincronizado ao vivo às " + new Date().toLocaleTimeString();
                 })
-                .catch(err => console.log("Aguardando rede para sincronizar..."));
+                .catch(err => {
+                    console.log("Tentando sincronizar dados...");
+                });
         }
 
         function recalculateEverything() {
-            // Repopula os inputs com as informações oficiais
             for (var id in scoresMap) {
                 var s = scoresMap[id];
-                // Verifica se o elemento está focado para não atrapalhar o administrador digitando
                 if (document.activeElement !== document.getElementById(id + '-1')) {
                     document.getElementById(id + '-1').value = s[0] !== null ? s[0] : '';
                 }
@@ -549,7 +532,7 @@
             for (var j = 0; j < matchesConfig.length; j++) {
                 var m = matchesConfig[j];
                 var sVal = scoresMap[m.id];
-                if (sVal[0] !== null && sVal[1] !== null) {
+                if (sVal && sVal[0] !== null && sVal[1] !== null) {
                     hasGroupScore = true;
                     var team1 = findTeam(m.t1_id);
                     var team2 = findTeam(m.t2_id);
@@ -581,7 +564,7 @@
             }
 
             var sf1 = scoresMap['sf1']; var sf2 = scoresMap['sf2'];
-            if (sf1[0] !== null && sf1[1] !== null && sf2[0] !== null && sf2[1] !== null) {
+            if (sf1 && sf1[0] !== null && sf1[1] !== null && sf2 && sf2[0] !== null && sf2[1] !== null) {
                 var n1_1 = document.getElementById('s1-t1').innerText;
                 var n1_2 = document.getElementById('s1-t2').innerText;
                 var n2_1 = document.getElementById('s2-t1').innerText;
@@ -598,7 +581,7 @@
                 document.getElementById('f-t2').innerText = winSF2;
 
                 var f = scoresMap['f']; var t3 = scoresMap['t3'];
-                if (f[0] !== null && f[1] !== null && t3[0] !== null && t3[1] !== null) {
+                if (f && f[0] !== null && f[1] !== null && t3 && t3[0] !== null && t3[1] !== null) {
                     var champ = (f[0] > f[1]) ? winSF1 : winSF2;
                     var vice = (f[0] > f[1]) ? winSF2 : winSF1;
                     var third = (t3[0] > t3[1]) ? losSF1 : losSF2;
@@ -646,11 +629,9 @@
             }
         }
 
-        // Executa a primeira puxada imediata ao abrir o site
+        // Primeira carga e loop de 15 segundos
         pullDataFromCloud();
-
-        // 🔄 SINCRONIZAÇÃO EM SEGUNDO PLANO AUTOMÁTICA (Roda a cada 30 segundos sozinho para os amigos verem)
-        setInterval(pullDataFromCloud, 30000);
+        setInterval(pullDataFromCloud, 15000);
     </script>
 </body>
 </html>
