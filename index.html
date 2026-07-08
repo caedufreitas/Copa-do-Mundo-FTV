@@ -3,57 +3,907 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel FTV</title>
+    <title>2º CHAMPIONS FTV - Painel de Controle Definitivo</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7fafc; padding: 20px; color: #2d3748; }
-        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .status { font-size: 0.85rem; color: #718096; margin-bottom: 15px; text-align: center; font-weight: 500; }
-        .input-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        input { width: 60px; padding: 8px; text-align: center; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7fafc;
+            color: #1a202c;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: linear-gradient(135deg, #1a365d 0%, #2a4365 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        header h1 { margin: 0; font-size: 1.5rem; font-weight: 800; }
+        header p { margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9; }
+        .container { width: 100%; padding: 12px; margin: 0 auto; }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-top: 5px solid #3182ce;
+        }
+        .card-grupo-a { border-top-color: #dd6b20; }
+        .card-grupo-b { border-top-color: #3182ce; }
+        .card-jogos { border-top-color: #4a5568; }
+        .card-finais { border-top-color: #d69e2e; }
+
+        .card h2 {
+            margin-top: 0;
+            color: #2d3748;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 8px;
+            font-size: 1.15rem;
+            margin-bottom: 12px;
+        }
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 440px; }
+        th, td { padding: 10px 6px; border-bottom: 1px solid #edf2f7; font-size: 0.8rem; text-align: center; }
+        th { background-color: #f7fafc; color: #4a5568; font-weight: 700; text-transform: uppercase; }
+        .text-left { text-align: left; }
+        
+        .games-timeline { display: flex; flex-direction: column; gap: 15px; }
+        .game-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .game-box.ga-internal { border-left: 5px solid #dd6b20; }
+        .game-box.gb-internal { border-left: 5px solid #3182ce; }
+        .game-box.cross-group { border-left: 5px solid #9f7aea; }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #718096;
+            border-bottom: 1px dashed #edf2f7;
+            padding-bottom: 4px;
+        }
+        .group-tag { padding: 2px 6px; border-radius: 4px; color: white; font-size: 0.65rem; }
+        .ga-internal .group-tag { background: #dd6b20; }
+        .gb-internal .group-tag { background: #3182ce; }
+        .cross-group .group-tag { background: #9f7aea; }
+
+        .game-body { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .team-display { flex: 1; display: flex; flex-direction: column; }
+        .team-display.home { align-items: flex-start; text-align: left; }
+        .team-display.away { align-items: flex-end; text-align: right; }
+
+        .team-country { font-size: 0.95rem; font-weight: 700; color: #2d3748; }
+        .team-players { font-size: 0.75rem; color: #718096; margin-top: 1px; }
+        
+        .score-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f7fafc;
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .score-input {
+            width: 45px;
+            height: 38px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 2px solid #cbd5e0;
+            border-radius: 6px;
+            color: #1a202c;
+        }
+        .score-vs { font-weight: bold; color: #a0aec0; font-size: 0.85rem; }
+
+        /* BOTÕES DE INTERAÇÃO */
+        .btn-update-match {
+            background-color: #edf2f7;
+            color: #2b6cb0;
+            border: 1px solid #cbd5e0;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+        .btn-bracket-master {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+        .btn-advance-phase {
+            background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
+            color: white;
+            border: none;
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 6px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+        .btn-champion-master {
+            background: linear-gradient(135deg, #d69e2e 0%, #b7791f 100%);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+        
+        .bracket-grid { display: flex; flex-direction: column; gap: 15px; }
+        .phase-box { background: #f7fafc; padding: 12px; border-radius: 10px; border: 2px dashed #cbd5e0; margin-bottom: 5px; }
+        .phase-box h3 { margin-top: 0; font-size: 0.9rem; text-align: center; color: #4a5568; text-transform: uppercase; margin-bottom: 10px; }
+        .match-final { background: white; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 8px; }
+        .row-final { display: flex; justify-content: space-between; align-items: center; margin: 5px 0; font-size: 0.85rem; font-weight: 600; }
+        .score-final-input { width: 42px; height: 34px; font-size: 1.1rem; font-weight: bold; text-align: center; border: 2px solid #cbd5e0; border-radius: 6px; }
+        
+        #podium-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            padding: 20px 10px;
+            margin-top: 25px;
+            border-top: 6px solid #d69e2e;
+            display: none;
+        }
+        #podium-card h2 { text-align: center; color: #b7791f; margin-top: 0; font-size: 1.25rem; text-transform: uppercase; margin-bottom: 25px; }
+        
+        .podium-wrapper { display: flex; align-items: flex-end; justify-content: center; gap: 6px; height: 210px; margin: 10px 0; }
+        .podium-column { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; text-align: center; border-radius: 8px 8px 0 0; padding: 10px 4px; font-weight: bold; }
+        .podium-col-vice { background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%); border: 2px solid #9ca3af; height: 75%; color: #1f2937; }
+        .podium-col-champion { background: linear-gradient(135deg, #fffbeb 0%, #fcd34d 100%); border: 2px solid #d69e2e; height: 100%; color: #92400e; }
+        .podium-col-third { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 2px solid #ea580c; height: 55%; color: #9a3412; }
+        .podium-label-badge { font-size: 1.3rem; margin-bottom: 5px; }
+        .podium-text-country { font-size: 0.95rem; font-weight: 800; line-height: 1.2; }
+        .podium-text-players { font-size: 0.7rem; font-weight: 600; opacity: 0.85; margin-top: 3px; }
+        .podium-base-number { font-size: 1.4rem; font-weight: 900; margin-top: auto; padding-top: 10px; opacity: 0.25; }
+
+        #summary-card {
+            background: #fffaf0;
+            border-radius: 14px;
+            border: 2px solid #ecc94b;
+            padding: 20px;
+            margin-top: 25px;
+            box-shadow: 0 4px 15px rgba(214,158,46,0.1);
+            display: none;
+        }
+        #summary-card h2 {
+            text-align: center;
+            color: #b7791f;
+            margin-top: 0;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid #fef3c7;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .congrats-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #78350f;
+            background-color: #fef9c3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .stats-badge-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-badge-box {
+            background: white;
+            border: 1px solid #fef3c7;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .stat-badge-box .val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #b7791f;
+        }
+        .stat-badge-box .lbl {
+            font-size: 0.75rem;
+            color: #718096;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .insights-box {
+            background: white;
+            border-left: 5px solid #d69e2e;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .motivation-section {
+            background: white;
+            padding: 20px 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            margin-top: 25px;
+            border-left: 6px solid #48bb78;
+        }
+        .motivation-text { font-size: 0.95rem; line-height: 1.6; color: #2d3748; font-style: italic; }
     </style>
 </head>
 <body>
 
-    <div class="status" id="sync-status">Conectando à rede FTV...</div>
-    
-    <div id="app-container" class="card">
-        <p>Aguardando dados da planilha...</p>
+    <header>
+        <h1>2º CHAMPIONS FTV</h1>
+        <p>Dashboard de Controle & Estatísticas de Campeão</p>
+    </header>
+
+    <div class="container">
+        
+        <div class="card card-grupo-a">
+            <h2>Grupo A</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="text-left">Dupla (Clube)</th>
+                            <th>P</th><th>J</th><th>V</th><th>D</th><th>PRO</th><th>CONT</th><th>SALDO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-a">
+                        <tr>
+                            <td class="text-left"><strong>⚪ Real Madrid</strong><br><span style="font-size:0.7rem; color:#718096;">Carlos & Barril</span></td>
+                            <td style="font-weight:bold; color:#2b6cb0;">0</td><td>0</td><td style="color:#48bb78;">0</td><td style="color:#f56565;">0</td><td>0</td><td>0</td><td style="font-weight:bold;">0</td>
+                        </tr>
+                        <tr>
+                            <td class="text-left"><strong>🔴 Bayern de Munique</strong><br><span style="font-size:0.7rem; color:#718096;">Pacheco & Matheus</span></td>
+                            <td style="font-weight:bold; color:#2b6cb0;">0</td><td>0</td><td style="color:#48bb78;">0</td><td style="color:#f56565;">0</td><td>0</td><td>0</td><td style="font-weight:bold;">0</td>
+                        </tr>
+                        <tr>
+                            <td class="text-left"><strong>🔴 Liverpool</strong><br><span style="font-size:0.7rem; color:#718096;">Pedrinho & Parra</span></td>
+                            <td style="font-weight:bold; color:#2b6cb0;">0</td><td>0</td><td style="color:#48bb78;">0</td><td style="color:#f56565;">0</td><td>0</td><td>0</td><td style="font-weight:bold;">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card card-grupo-b">
+            <h2>Grupo B</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="text-left">Dupla (Clube)</th>
+                            <th>P</th><th>J</th><th>V</th><th>D</th><th>PRO</th><th>CONT</th><th>SALDO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-b">
+                        <tr>
+                            <td class="text-left"><strong>🔴 Milan</strong><br><span style="font-size:0.7rem; color:#718096;">Almeida & Marcel</span></td>
+                            <td style="font-weight:bold; color:#2b6cb0;">0</td><td>0</td><td style="color:#48bb78;">0</td><td style="color:#f56565;">0</td><td>0</td><td>0</td><td style="font-weight:bold;">0</td>
+                        </tr>
+                        <tr>
+                            <td class="text-left"><strong>🔵 Barcelona</strong><br><span style="font-size:0.7rem; color:#718096;">Urbano & Ariel</span></td>
+                            <td style="font-weight:bold; color:#2b6cb0;">0</td><td>0</td><td style="color:#48bb78;">0</td><td style="color:#f56565;">0</td><td>0</td><td>0</td><td style="font-weight:bold;">0</td>
+                        </tr>
+                        <tr>
+                            <td class="text-left"><strong>⚪ Ajax</strong><br><span style="font-size:0.7rem; color:#718096;">Galanos & Alison</span></td>
+                            <td style="font-weight:bold; color:#2b6cb0;">0</td><td>0</td><td style="color:#48bb78;">0</td><td style="color:#f56565;">0</td><td>0</td><td>0</td><td style="font-weight:bold;">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card card-jogos">
+            <h2>Jogos da Fase de Grupos (Todos contra Todos)</h2>
+            <div class="games-timeline">
+                
+                <div class="game-box ga-internal">
+                    <div class="game-header"><span>Jogo 1</span><span class="group-tag">Grupo A</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Real Madrid</span><span class="team-players">Carlos & Barril</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m1-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m1-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Bayern de Munique</span><span class="team-players">Pacheco & Matheus</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box gb-internal">
+                    <div class="game-header"><span>Jogo 2</span><span class="group-tag">Grupo B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Milan</span><span class="team-players">Almeida & Marcel</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m2-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m2-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Barcelona</span><span class="team-players">Urbano & Ariel</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box cross-group">
+                    <div class="game-header"><span>Jogo 3</span><span class="group-tag">Grupo A vs B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Real Madrid</span><span class="team-players">Carlos & Barril</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m3-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m3-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Milan</span><span class="team-players">Almeida & Marcel</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box cross-group">
+                    <div class="game-header"><span>Jogo 4</span><span class="group-tag">Grupo A vs B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Bayern de Munique</span><span class="team-players">Pacheco & Matheus</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m4-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m4-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Ajax</span><span class="team-players">Galanos & Alison</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box ga-internal">
+                    <div class="game-header"><span>Jogo 5</span><span class="group-tag">Grupo A</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Liverpool</span><span class="team-players">Pedrinho & Parra</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m5-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m5-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Real Madrid</span><span class="team-players">Carlos & Barril</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box gb-internal">
+                    <div class="game-header"><span>Jogo 6</span><span class="group-tag">Grupo B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Barcelona</span><span class="team-players">Urbano & Ariel</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m6-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m6-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Ajax</span><span class="team-players">Galanos & Alison</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box cross-group">
+                    <div class="game-header"><span>Jogo 7</span><span class="group-tag">Grupo A vs B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Liverpool</span><span class="team-players">Pedrinho & Parra</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m7-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m7-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Milan</span><span class="team-players">Almeida & Marcel</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box cross-group">
+                    <div class="game-header"><span>Jogo 8</span><span class="group-tag">Grupo A vs B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Real Madrid</span><span class="team-players">Carlos & Barril</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m8-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m8-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Barcelona</span><span class="team-players">Urbano & Ariel</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box ga-internal">
+                    <div class="game-header"><span>Jogo 9</span><span class="group-tag">Grupo A</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Bayern de Munique</span><span class="team-players">Pacheco & Matheus</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m9-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m9-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Liverpool</span><span class="team-players">Pedrinho & Parra</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box gb-internal">
+                    <div class="game-header"><span>Jogo 10</span><span class="group-tag">Grupo B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Ajax</span><span class="team-players">Galanos & Alison</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m10-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m10-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Milan</span><span class="team-players">Almeida & Marcel</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box cross-group">
+                    <div class="game-header"><span>Jogo 11</span><span class="group-tag">Grupo A vs B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Bayern de Munique</span><span class="team-players">Pacheco & Matheus</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m11-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m11-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Barcelona</span><span class="team-players">Urbano & Ariel</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box cross-group">
+                    <div class="game-header"><span>Jogo 12</span><span class="group-tag">Grupo A vs B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Liverpool</span><span class="team-players">Pedrinho & Parra</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m12-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m12-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Ajax</span><span class="team-players">Galanos & Alison</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box cross-group">
+                    <div class="game-header"><span>Jogo 13</span><span class="group-tag">Grupo A vs B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Real Madrid</span><span class="team-players">Carlos & Barril</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m13-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m13-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Ajax</span><span class="team-players">Galanos & Alison</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box cross-group">
+                    <div class="game-header"><span>Jogo 14</span><span class="group-tag">Grupo A vs B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Bayern de Munique</span><span class="team-players">Pacheco & Matheus</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m14-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m14-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Milan</span><span class="team-players">Almeida & Marcel</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+                <div class="game-box cross-group">
+                    <div class="game-header"><span>Jogo 15</span><span class="group-tag">Grupo A vs B</span></div>
+                    <div class="game-body">
+                        <div class="team-display home"><span class="team-country">Liverpool</span><span class="team-players">Pedrinho & Parra</span></div>
+                        <div class="score-container">
+                            <input type="number" class="score-input" id="m15-1" inputmode="numeric">
+                            <span class="score-vs">×</span>
+                            <input type="number" class="score-input" id="m15-2" inputmode="numeric">
+                        </div>
+                        <div class="team-display away"><span class="team-country">Barcelona</span><span class="team-players">Urbano & Ariel</span></div>
+                    </div>
+                    <button class="btn-update-match" onclick="updateTablesAndSort()">⚙️ Salvar Placar & Ordenar Tabelas</button>
+                </div>
+
+            </div>
+            <button class="btn-bracket-master" onclick="finalizeGroupsAndLockBracket()">🏆 Passo 1: Fechar Grupos ➔ Montar Semifinais</button>
+        </div>
+
+        <div class="card card-finais">
+            <h2>Fase Final & Mata-Mata</h2>
+            <div class="bracket-grid">
+                <div class="phase-box">
+                    <h3>Semifinais</h3>
+                    <div class="match-final">
+                        <div style="font-size: 0.7rem; color:#a0aec0; margin-bottom:4px;">SEMIFINAL 1</div>
+                        <div class="row-final"><span id="s1-t1">1º Grupo A</span><input type="number" class="score-final-input" id="sf1-1" inputmode="numeric"></div>
+                        <div class="row-final"><span id="s1-t2">2º Grupo B</span><input type="number" class="score-final-input" id="sf1-2" inputmode="numeric"></div>
+                    </div>
+                    <div class="match-final">
+                        <div style="font-size: 0.7rem; color:#a0aec0; margin-bottom:4px;">SEMIFINAL 2</div>
+                        <div class="row-final"><span id="s2-t1">1º Grupo B</span><input type="number" class="score-final-input" id="sf2-1" inputmode="numeric"></div>
+                        <div class="row-final"><span id="s2-t2">2º Grupo A</span><input type="number" class="score-final-input" id="sf2-2" inputmode="numeric"></div>
+                    </div>
+                    <button class="btn-advance-phase" onclick="advanceToFinalsAndThirdPlace()">👉 Passo 2: Definir Finalistas</button>
+                </div>
+
+                <div class="phase-box" style="border-color: #ed8936;">
+                    <h3>Disputa de 3º Lugar</h3>
+                    <div class="match-final" style="border-left: 4px solid #ed8936;">
+                        <div style="font-size: 0.7rem; color:#ed8936; margin-bottom:4px;">MEDALHA DE BRONZE 🥉</div>
+                        <div class="row-final"><span id="t3-t1">Perdedor SF1</span><input type="number" class="score-final-input" id="t3-1" inputmode="numeric"></div>
+                        <div class="row-final"><span id="t3-t2">Perdedor SF2</span><input type="number" class="score-final-input" id="t3-2" inputmode="numeric"></div>
+                    </div>
+                </div>
+
+                <div class="phase-box" style="border-color: #ecc94b; background:#fffaf0;">
+                    <h3>Grande Final</h3>
+                    <div class="match-final" style="border: 2px solid #ecc94b;">
+                        <div style="font-size: 0.7rem; color:#b7791f; margin-bottom:4px;">DISPUTA DO OURO 🥇🥈</div>
+                        <div class="row-final"><span id="f-t1">Vencedor SF1</span><input type="number" class="score-final-input" id="f-1" inputmode="numeric"></div>
+                        <div class="row-final"><span id="f-t2">Vencedor SF2</span><input type="number" class="score-final-input" id="f-2" inputmode="numeric"></div>
+                    </div>
+                    <button class="btn-champion-master" onclick="declareWorldChampion()">🏆 Passo 3: Fechar Torneio & Revelar Campeão</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="podium-card">
+            <h2>🏆 Pódio Oficial do Torneio 🏆</h2>
+            <div class="podium-wrapper" id="podium-graphics-container"></div>
+        </div>
+
+        <div id="summary-card">
+            <h2>🏅 Resumo Técnico do Campeão 🏅</h2>
+            <div class="congrats-text" id="summary-congrats-text"></div>
+            <div class="stats-badge-grid">
+                <div class="stat-badge-box"><div class="val" id="sm-jogos">0</div><div class="lbl">Jogos Totais</div></div>
+                <div class="stat-badge-box"><div class="val" id="sm-vitorias">0</div><div class="lbl">Vitórias</div></div>
+                <div class="stat-badge-box"><div class="val" id="sm-pro">0</div><div class="lbl">Pontos Pró (Ataque)</div></div>
+                <div class="stat-badge-box"><div class="val" id="sm-saldo">0</div><div class="lbl">Saldo de Pontos</div></div>
+            </div>
+            <div class="insights-box" id="summary-insights-text"></div>
+        </div>
+
+        <div class="motivation-section">
+            <h2 style="margin-top:0; font-size:1.1rem; color:#22543d;">⚽ Regulamento Oficial & Palavra de Abertura</h2>
+            <div class="motivation-text">
+                "Grandes atletas não nascem prontos; eles se moldam na intensidade de cada jogada! O 2º Champions do FTV promove a integração e resenha inesquecível que só o futevôlei proporciona na Pompeia Beach Esportes (Rua Coronel Melo de Oliveira, 820) no dia 28/07 das 20h00 às 23h00.<br><br>
+                <strong>⚠️ REGRAS RÁPIDAS DA COMPETIÇÃO:</strong><br>
+                • <strong>Pontuação:</strong> Set único de 18 pontos. Caso haja empate em 17x17, o jogo vai a dois (necessário 2 pontos de vantagem).<br>
+                • <strong>Rede:</strong> É terminantemente proibido encostar na rede. Qualquer toque zera a jogada e é ponto automático do rival.<br>
+                • <strong>Bola no Teto:</strong> Se bater no teto e cair no lado oposto, o rival decide: continua jogando ou, se parar, volta o saque.<br>
+                • <strong>Saque Intercalado:</strong> Deve revezar o alvo na recepção. Sacar na mesma pessoa 2x seguidas: na 1ª volta o saque, na 2ª é ponto do adversário.<br><br>
+                <strong>💰 PREMIAÇÕES DO POTE DA AREIA:</strong><br>
+                🥇 1º Lugar: R$ 300,00 + Troféu | 🥈 2º Lugar: R$ 200,00 + Troféu | 🥉 3º Lugar: R$ 100,00 + Troféu<br><br>
+                Entrem na arena com sangue nos olhos, joguem com alegria no coração e defendam suas cores até o último ponto. Que vença a melhor dupla!"
+            </div>
+        </div>
+
     </div>
 
     <script>
-        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzZcvNUJSQTPQa1QLpVXnZ3QxKtMpDuWXuiREPy8UCtV4Beck0uGfSVgxVjXGliQbRJ/exec";
-        
-        window.injectCloudScores = function(data) {
-            const statusDiv = document.getElementById('sync-status');
-            statusDiv.innerText = "Atualizado às " + new Date().toLocaleTimeString();
-            statusDiv.style.color = "#48bb78";
-            
-            console.log("Dados recebidos da nuvem:", data);
-            
-            // Exemplo de como renderizar: limpa e reconstrói
-            const container = document.getElementById('app-container');
-            container.innerHTML = "<h3>Placares</h3>";
-            for (let key in data) {
-                let div = document.createElement('div');
-                div.className = 'input-group';
-                div.innerHTML = `<span>${key}</span> <div><input value="${data[key][0]||''}"> x <input value="${data[key][1]||''}"></div>`;
-                container.appendChild(div);
-            }
-        };
+        var groupA_Teams = [
+            { id: 't1', country: 'Real Madrid', players: 'Carlos & Barril', pts: 0, j: 0, v: 0, d: 0, pro: 0, cont: 0, saldo: 0 },
+            { id: 't2', country: 'Bayern de Munique', players: 'Pacheco & Matheus', pts: 0, j: 0, v: 0, d: 0, pro: 0, cont: 0, saldo: 0 },
+            { id: 't3', country: 'Liverpool', players: 'Pedrinho & Parra', pts: 0, j: 0, v: 0, d: 0, pro: 0, cont: 0, saldo: 0 }
+        ];
 
-        function pullData() {
-            let old = document.getElementById('jsonp-script');
-            if (old) old.remove();
-            
-            let s = document.createElement('script');
-            s.id = 'jsonp-script';
-            s.src = BACKEND_URL + "?callback=injectCloudScores&cb=" + new Date().getTime();
-            document.body.appendChild(s);
+        var groupB_Teams = [
+            { id: 't4', country: 'Milan', players: 'Almeida & Marcel', pts: 0, j: 0, v: 0, d: 0, pro: 0, cont: 0, saldo: 0 },
+            { id: 't5', country: 'Barcelona', players: 'Urbano & Ariel', pts: 0, j: 0, v: 0, d: 0, pro: 0, cont: 0, saldo: 0 },
+            { id: 't6', country: 'Ajax', players: 'Galanos & Alison', pts: 0, j: 0, v: 0, d: 0, pro: 0, cont: 0, saldo: 0 }
+        ];
+
+        var matchesConfig = [
+            { group: 'A', t1_id: 't1', t2_id: 't2', i1: 'm1-1', i2: 'm1-2' },
+            { group: 'B', t1_id: 't4', t2_id: 't5', i1: 'm2-1', i2: 'm2-2' },
+            { group: 'AB', t1_id: 't1', t2_id: 't4', i1: 'm3-1', i2: 'm3-2' },
+            { group: 'AB', t1_id: 't2', t2_id: 't6', i1: 'm4-1', i2: 'm4-2' },
+            { group: 'A', t1_id: 't3', t2_id: 't1', i1: 'm5-1', i2: 'm5-2' },
+            { group: 'B', t1_id: 't5', t2_id: 't6', i1: 'm6-1', i2: 'm6-2' },
+            { group: 'AB', t1_id: 't3', t2_id: 't4', i1: 'm7-1', i2: 'm7-2' },
+            { group: 'AB', t1_id: 't1', t2_id: 't5', i1: 'm8-1', i2: 'm8-2' },
+            { group: 'A', t1_id: 't2', t2_id: 't3', i1: 'm9-1', i2: 'm9-2' },
+            { group: 'B', t1_id: 't6', t2_id: 't4', i1: 'm10-1', i2: 'm10-2' },
+            { group: 'AB', t1_id: 't2', t2_id: 't5', i1: 'm11-1', i2: 'm11-2' },
+            { group: 'AB', t1_id: 't3', t2_id: 't6', i1: 'm12-1', i2: 'm12-2' },
+            { group: 'AB', t1_id: 't1', t2_id: 't6', i1: 'm13-1', i2: 'm13-2' },
+            { group: 'AB', t1_id: 't2', t2_id: 't4', i1: 'm14-1', i2: 'm14-2' },
+            { group: 'AB', t1_id: 't3', t2_id: 't5', i1: 'm15-1', i2: 'm15-2' }
+        ];
+
+        function findTeam(id) {
+            return groupA_Teams.find(t => t.id === id) || groupB_Teams.find(t => t.id === id);
         }
 
-        // Tenta atualizar a cada 10 segundos
-        setInterval(pullData, 10000);
-        pullData();
+        function getPlayersByCountry(countryName) {
+            var all = groupA_Teams.concat(groupB_Teams);
+            for (var i = 0; i < all.length; i++) {
+                if (all[i].country === countryName) return all[i].players;
+            }
+            return "";
+        }
+
+        function runCoreCalculation() {
+            var all = groupA_Teams.concat(groupB_Teams);
+            for (var i = 0; i < all.length; i++) {
+                var t = all[i];
+                t.pts = 0; t.j = 0; t.v = 0; t.d = 0; t.pro = 0; t.cont = 0; t.saldo = 0;
+            }
+            for (var j = 0; j < matchesConfig.length; j++) {
+                var m = matchesConfig[j];
+                var v1 = document.getElementById(m.i1).value;
+                var v2 = document.getElementById(m.i2).value;
+
+                if (v1 !== '' && v2 !== '') {
+                    var s1 = parseInt(v1);
+                    var s2 = parseInt(v2);
+                    var team1 = findTeam(m.t1_id);
+                    var team2 = findTeam(m.t2_id);
+
+                    team1.j++; team2.j++;
+                    team1.pro += s1; team1.cont += s2;
+                    team2.pro += s2; team2.cont += s1;
+
+                    if (s1 > s2) {
+                        team1.v++; team1.pts += 3; team2.d++;
+                    } else if (s2 > s1) {
+                        team2.v++; team2.pts += 3; team1.d++;
+                    }
+                    team1.saldo = team1.pro - team1.cont;
+                    team2.saldo = team2.pro - team2.cont;
+                }
+            }
+
+            // Critérios atualizados: Pontos > Saldo > Pontos Pró > Pontos Contra (Menor é melhor)
+            var sortFn = function(a, b) {
+                if (b.pts !== a.pts) return b.pts - a.pts;
+                if (b.saldo !== a.saldo) return b.saldo - a.saldo;
+                if (b.pro !== a.pro) return b.pro - a.pro;
+                return a.cont - b.cont;
+            };
+
+            groupA_Teams.sort(sortFn);
+            groupB_Teams.sort(sortFn);
+        }
+
+        function renderHtmlTables() {
+            var tbodyA = document.getElementById('tbody-a');
+            tbodyA.innerHTML = '';
+            for (var i = 0; i < groupA_Teams.length; i++) {
+                var t = groupA_Teams[i];
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td class="text-left"><strong>' + (t.country === 'Real Madrid' || t.country === 'Ajax' ? '⚪ ' : '🔴 ') + t.country + '</strong><br><span style="font-size:0.7rem; color:#718096;">' + t.players + '</span></td>' +
+                               '<td style="font-weight:bold; color:#2b6cb0;">' + t.pts + '</td>' +
+                               '<td>' + t.j + '</td>' +
+                               '<td style="color:#48bb78;">' + t.v + '</td>' +
+                               '<td style="color:#f56565;">' + t.d + '</td>' +
+                               '<td>' + t.pro + '</td>' +
+                               '<td>' + t.cont + '</td>' +
+                               '<td style="font-weight:bold;">' + (t.saldo > 0 ? '+' : '') + t.saldo + '</td>';
+                tbodyA.appendChild(tr);
+            }
+
+            var tbodyB = document.getElementById('tbody-b');
+            tbodyB.innerHTML = '';
+            for (var j = 0; j < groupB_Teams.length; j++) {
+                var t2 = groupB_Teams[j];
+                var tr2 = document.createElement('tr');
+                tr2.innerHTML = '<td class="text-left"><strong>' + (t2.country === 'Barcelona' ? '🔵 ' : (t2.country === 'Ajax' ? '⚪ ' : '🔴 ')) + t2.country + '</strong><br><span style="font-size:0.7rem; color:#718096;">' + t2.players + '</span></td>' +
+                                '<td style="font-weight:bold; color:#2b6cb0;">' + t2.pts + '</td>' +
+                                '<td>' + t2.j + '</td>' +
+                                '<td style="color:#48bb78;">' + t2.v + '</td>' +
+                                '<td style="color:#f56565;">' + t2.d + '</td>' +
+                                '<td>' + t2.pro + '</td>' +
+                                '<td>' + t2.cont + '</td>' +
+                                '<td style="font-weight:bold;">' + (t2.saldo > 0 ? '+' : '') + t2.saldo + '</td>';
+                tbodyB.appendChild(tr2);
+            }
+        }
+
+        function updateTablesAndSort() {
+            runCoreCalculation();
+            renderHtmlTables();
+        }
+
+        function finalizeGroupsAndLockBracket() {
+            runCoreCalculation();
+            renderHtmlTables();
+
+            document.getElementById('s1-t1').innerText = groupA_Teams[0].country;
+            document.getElementById('s1-t2').innerText = groupB_Teams[1].country;
+            document.getElementById('s2-t1').innerText = groupB_Teams[0].country;
+            document.getElementById('s2-t2').innerText = groupA_Teams[1].country;
+
+            alert("🏆 Classificação fechada! Chaveamento das Semifinais montado com base nos melhores de cada grupo.");
+        }
+
+        function advanceToFinalsAndThirdPlace() {
+            var sf1_1 = document.getElementById('sf1-1').value;
+            var sf1_2 = document.getElementById('sf1-2').value;
+            var sf2_1 = document.getElementById('sf2-1').value;
+            var sf2_2 = document.getElementById('sf2-2').value;
+
+            if (sf1_1 === '' || sf1_2 === '' || sf2_1 === '' || sf2_2 === '') {
+                alert("⚠️ Digite os placares das Semifinais antes de avançar!");
+                return;
+            }
+
+            var p1_1 = parseInt(sf1_1); var p1_2 = parseInt(sf1_2);
+            var p2_1 = parseInt(sf2_1); var p2_2 = parseInt(sf2_2);
+
+            var name1_1 = document.getElementById('s1-t1').innerText;
+            var name1_2 = document.getElementById('s1-t2').innerText;
+            var name2_1 = document.getElementById('s2-t1').innerText;
+            var name2_2 = document.getElementById('s2-t2').innerText;
+
+            if (p1_1 === p1_2 || p2_1 === p2_2) {
+                alert("⚠️ Jogos de mata-mata precisam de um vencedor!");
+                return;
+            }
+
+            var winnerSF1 = (p1_1 > p1_2) ? name1_1 : name1_2;
+            var loserSF1 = (p1_1 > p1_2) ? name1_2 : name1_1;
+            var winnerSF2 = (p2_1 > p2_2) ? name2_1 : name2_2;
+            var loserSF2 = (p2_1 > p2_2) ? name2_2 : name2_1;
+
+            document.getElementById('t3-t1').innerText = loserSF1;
+            document.getElementById('t3-t2').innerText = loserSF2;
+            document.getElementById('f-t1').innerText = winnerSF1;
+            document.getElementById('f-t2').innerText = winnerSF2;
+
+            alert("🔥 Grande Final e Disputa de 3º Lugar montadas de forma dinâmica!");
+        }
+
+        function declareWorldChampion() {
+            var f1 = document.getElementById('f-1').value;
+            var f2 = document.getElementById('f-2').value;
+            var t3_1 = document.getElementById('t3-1').value;
+            var t3_2 = document.getElementById('t3-2').value;
+
+            if (f1 === '' || f2 === '' || t3_1 === '' || t3_2 === '') {
+                alert("⚠️ Certifique-se de preencher os placares da Grande Final e do 3º Lugar!");
+                return;
+            }
+
+            var ptsF1 = parseInt(f1); var ptsF2 = parseInt(f2);
+            var ptsT1 = parseInt(t3_1); var ptsT2 = parseInt(t3_2);
+
+            var finalT1 = document.getElementById('f-t1').innerText;
+            var finalT2 = document.getElementById('f-t2').innerText;
+            var thirdT1 = document.getElementById('t3-t1').innerText;
+            var thirdT2 = document.getElementById('t3-t2').innerText;
+
+            if (ptsF1 === ptsF2 || ptsT1 === ptsT2) {
+                alert("⚠️ Finais e 3º lugar não podem terminar empatados!");
+                return;
+            }
+
+            var champion = (ptsF1 > ptsF2) ? finalT1 : finalT2;
+            var viceChampion = (ptsF1 > ptsF2) ? finalT2 : finalT1;
+            var thirdPlace = (ptsT1 > ptsT2) ? thirdT1 : thirdT2;
+
+            // Renderização Gráfica do Pódio Olímpico
+            var container = document.getElementById('podium-graphics-container');
+            container.innerHTML = 
+                '<div class="podium-column podium-col-vice">' +
+                    '<div class="podium-label-badge">🥈</div>' +
+                    '<div class="podium-text-country">' + viceChampion + '</div>' +
+                    '<div class="podium-text-players">' + getPlayersByCountry(viceChampion) + '</div>' +
+                    '<div class="podium-base-number">2</div>' +
+                '</div>' +
+                '<div class="podium-column podium-col-champion">' +
+                    '<div class="podium-label-badge">👑</div>' +
+                    '<div class="podium-text-country">' + champion + '</div>' +
+                    '<div class="podium-text-players">' + getPlayersByCountry(champion) + '</div>' +
+                    '<div class="podium-base-number">1</div>' +
+                '</div>' +
+                '<div class="podium-column podium-col-third">' +
+                    '<div class="podium-label-badge">🥉</div>' +
+                    '<div class="podium-text-country">' + thirdPlace + '</div>' +
+                    '<div class="podium-text-players">' + getPlayersByCountry(thirdPlace) + '</div>' +
+                    '<div class="podium-base-number">3</div>' +
+                '</div>';
+
+            document.getElementById('podium-card').style.display = 'block';
+
+            // COMPILAÇÃO DOS DADOS TÉCNICOS DO CAMPEÃO
+            var all = groupA_Teams.concat(groupB_Teams);
+            var champData = all.find(t => t.country === champion);
+            
+            var pointsInFinal = (ptsF1 > ptsF2) ? ptsF1 : ptsF2;
+            var pointsAgainstInFinal = (ptsF1 > ptsF2) ? ptsF2 : ptsF1;
+            
+            var pointsInSemi = 0; var pointsAgainstInSemi = 0;
+            if (document.getElementById('s1-t1').innerText === champion) {
+                pointsInSemi = parseInt(document.getElementById('sf1-1').value);
+                pointsAgainstInSemi = parseInt(document.getElementById('sf1-2').value);
+            } else if (document.getElementById('s1-t2').innerText === champion) {
+                pointsInSemi = parseInt(document.getElementById('sf1-2').value);
+                pointsAgainstInSemi = parseInt(document.getElementById('sf1-1').value);
+            } else if (document.getElementById('s2-t1').innerText === champion) {
+                pointsInSemi = parseInt(document.getElementById('sf2-1').value);
+                pointsAgainstInSemi = parseInt(document.getElementById('sf2-2').value);
+            } else if (document.getElementById('s2-t2').innerText === champion) {
+                pointsInSemi = parseInt(document.getElementById('sf2-2').value);
+                pointsAgainstInSemi = parseInt(document.getElementById('sf2-1').value);
+            }
+
+            var totalMatches = champData.j + 2; 
+            var totalWins = champData.v + 2; 
+            var totalProPoints = champData.pro + pointsInSemi + pointsInFinal;
+            var totalContPoints = champData.cont + pointsAgainstInSemi + pointsAgainstInFinal;
+            var finalSaldo = totalProPoints - totalContPoints;
+
+            document.getElementById('sm-jogos').innerText = totalMatches;
+            document.getElementById('sm-vitorias').innerText = totalWins;
+            document.getElementById('sm-pro').innerText = totalProPoints;
+            document.getElementById('sm-saldo').innerText = (finalSaldo > 0 ? '+' : '') + finalSaldo;
+
+            document.getElementById('summary-congrats-text').innerHTML = 
+                "🎉 PARABÉNS À DUPLA VENCEDORA: " + champData.players.toUpperCase() + "!<br>" +
+                "A equipe do " + champion + " sagrou-se campeã absoluta do 2º Champions FTV na Pompeia Beach Esportes, superando uma maratona intensa de jogos na areia!";
+
+            var insightText = "<strong>📊 Insights da Trajetória:</strong> O campeão enfrentou todas as duplas do torneio na fase inicial. ";
+            if (finalSaldo >= 25) {
+                insightText += "Com um ataque cirúrgico e recepções defensivas impecáveis, mantiveram um saldo de pontos extremamente dominante em toda a competição.";
+            } else {
+                insightText += "Apresentaram uma força mental impressionante nas viradas de set e fecharam o torneio com solidez nos pontos cruciais do mata-mata.";
+            }
+            document.getElementById('summary-insights-text').innerHTML = insightText;
+
+            var summaryCard = document.getElementById('summary-card');
+            summaryCard.style.display = 'block';
+            summaryCard.scrollIntoView({ behavior: 'smooth' });
+
+            alert("🎉 Torneio Encerrado com Sucesso! O Pódio Olímpico e os dados do Campeão estão liberados.");
+        }
     </script>
 </body>
 </html>
